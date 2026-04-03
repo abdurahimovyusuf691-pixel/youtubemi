@@ -1,0 +1,55 @@
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+# Usually .gitignore is copied from GitHub for PyInstaller builds
+#  but if not, this block can be added.
+.build/
+PyInstaller/
+
+# Pyenv
+.python-version
+
+# Pipenv
+Pipfile.lock
+
+# Poetry
+poetry.lock
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+media/
+env/
+venv/
+.venv/
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,24 @@
+{% extends 'videos/base.html' %}
+{% block title %}{{ author.username }} videolari{% endblock %}
+
+{% block content %}
+  <h3>{{ author.username }}'ning videolari</h3>
+  <div class="row">
+    {% for video in videos %}
+      <div class="col-md-4">
+        <div class="card mb-3 video-card">
+          <a href="{% url 'videos:video_detail' video.pk %}">
+            <img src="{% if video.thumbnail %}{{ video.thumbnail.url }}{% else %}/static/images/default-thumb.jpg{% endif %}" class="card-img-top video-thumb">
+          </a>
+          <div class="card-body">
+            <h6 class="card-title">{{ video.title }}</h6>
+            <p class="text-muted mb-0">👁 {{ video.views }} marta</p>
+            <small class="text-muted">{{ video.uploaded_at|date:"d M Y" }}</small>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>Hali video yo‘q.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

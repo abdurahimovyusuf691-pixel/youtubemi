@@ -1,0 +1,12 @@
+@echo off
+cd /d f:\sotgani\youtubemi
+echo "# youtubemi" >> README.md
+git init
+git add README.md
+git add .
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/abdurahimovyusuf691-pixel/youtubemi.git || git remote set-url origin https://github.com/abdurahimovyusuf691-pixel/youtubemi.git
+git push -u origin main
+echo Upload complete! Check https://github.com/abdurahimovyusuf691-pixel/youtubemi
+pause

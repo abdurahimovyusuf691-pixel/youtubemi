@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}FTube{% endblock %}</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #fff;
+      font-family: Arial, sans-serif;
+    }
+    .navbar {
+      background-color: #fff;
+    } 
+    .navbar-brand {
+      color: black !important;
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
+    a.nav-link, a.navbar-brand:hover {
+      color: black !important;
+      text-decoration: none;
+    }
+    footer {
+      margin-top: 3rem;
+      padding: 1rem 0;
+      background-color: #f8f9fa;
+      text-align: center;
+      color: #6c757d;
+    }
+    .video-card {
+      max-width: 360px;
+    }
+    .video-thumb {
+      width: 100%;
+      height: 202px;
+      object-fit: cover;
+    }
+    .menu-icon {
+      font-size: 24px;
+      color: black;
+      cursor: pointer;
+    }
+    .side-menu {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background: #fff;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+      padding-top: 60px;
+      transition: 0.3s ease;
+      z-index: 1050;
+    }
+    .side-menu.open {
+      left: 0;
+    }
+    .menu-item {
+      padding: 15px 20px;
+      border-bottom: 1px solid #eee;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.3);
+      z-index: 1040;
+    }
+    .overlay.show {
+      display: block;
+    }
+    .salom a {
+      text-decoration: none;
+      padding-left: 50px;
+    }
+    .video-wrapper {
+      background-color: black;
+      width: 100%;
+      max-width: 100%;
+      aspect-ratio: 16 / 9;
+      position: relative;
+      overflow: hidden;
+    }
+    .video-player {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background-color: black;
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg shadow-sm sticky-top">
+  <div class="container-fluid d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+      <button class="btn btn-sm me-3" onclick="toggleMenu()" style="font-size: 20px;">☰</button>
+      <a class="navbar-brand" href="{% url 'videos:video_list' %}">Al-jabr coders</a>
+    </div>
+    <form class="d-none d-md-flex mx-3 flex-grow-1" role="search" style="max-width: 600px;">
+      <div class="input-group">
+        <input class="form-control" type="search" name="q" placeholder="Qidiruv..." />
+        <button class="btn btn-outline-secondary" type="submit">🔍</button>
+      </div>
+    </form>
+    <div class="d-flex align-items-center">
+      <a href="{% url 'videos:video_create' %}" class="btn btn-success me-2">➕ Video</a>
+      {% if user.is_authenticated %}
+      <form method="post" action="{% url 'videos:logout' %}">
+        {% csrf_token %}
+        <button class="btn btn-link text-dark">🚪 Chiqish</button>
+      </form>
+      {% else %}
+      <a href="{% url 'videos:login' %}" class="btn btn-link text-dark me-2" style="text-decoration: none;">👤 Kirish</a>
+      <a href="{% url 'videos:signup' %}" class="btn btn-link text-dark me-2" style="text-decoration: none;">✍️ Ro'yxatdan o'tish</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<!-- Yon menyu -->
+<!-- Yon menyu (faqat tegishli qismlar ko‘rsatilgan) -->
+<div class="side-menu" id="sideMenu">
+  <div class="menu-item"><a style="text-decoration: none; color: black;" href="{% url 'videos:video_list' %}">🏠 Glavnaya</a></div>
+  <div class="menu-item">🎬 Shorts</div>
+
+  <!-- Obunalar menyusi (ikki bo‘limli) -->
+  <div class="menu-item" onclick="toggleSection('subscriptionsPanel')">📌 Obunalar ▾</div>
+
+  <div id="subscriptionsPanel" style="display: none; padding-left: 10px;">
+    <!-- Obuna bo‘lganlarim -->
+    <div class="menu-item" style="padding: 10px 10px; font-size: 16px;" onclick="toggleSection('mySubs')">➤ Obuna bo‘lganlarim</div>
+    <div class="salom" id="mySubs" style="display: none;">
+      {% if user.is_authenticated %}
+        {% if user_subscriptions %}
+          {% for author in user_subscriptions %}
+            <a href="{% url 'videos:author_videos' author.pk %}">📌 {{ author.username }}</a><br>
+          {% endfor %}
+        {% else %}
+          <p style="padding-left: 20px;">Hech kimga obuna emassiz.</p>
+        {% endif %}
+      {% else %}
+        <a href="{% url 'videos:login' %}">Kirish kerak</a>
+      {% endif %}
+    </div>
+
+    <!-- Menga obuna bo‘lganlar -->
+    <div class="menu-item" style="padding: 10px 10px; font-size: 16px;" onclick="toggleSection('subsToMe')">👥 Menga obuna bo‘lganlar</div>
+    <div class="salom" id="subsToMe" style="display: none;">
+      {% if user.is_authenticated %}
+        {% if subscribers %}
+          {% for subscriber in subscribers %}
+            <a href="{% url 'videos:author_videos' subscriber.pk %}">👤  {{ subscriber.username }}</a><br>
+          {% endfor %}
+        {% else %}
+          <p style="padding-left: 20px;">Sizga hech kim obuna emas.</p>
+        {% endif %}
+      {% else %}
+        <a href="{% url 'videos:login' %}">Kirish kerak</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+
+<!-- Qoraygan fon -->
+<div id="menuOverlay" class="overlay" onclick="toggleMenu()"></div>
+
+<!-- Asosiy kontent -->
+<div class="container mt-4">
+  {% block content %}{% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function toggleMenu() {
+    const menu = document.getElementById("sideMenu");
+    const overlay = document.getElementById("menuOverlay");
+    menu.classList.toggle("open");
+    overlay.classList.toggle("show");
+  }
+
+  function toggleSection(id) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.style.display = (el.style.display === "block") ? "none" : "block";
+    }
+  }
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

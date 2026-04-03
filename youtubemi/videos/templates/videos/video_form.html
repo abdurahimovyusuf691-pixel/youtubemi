@@ -1,0 +1,38 @@
+{% extends 'videos/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white text-center rounded-top-4">
+          <h3 class="mb-0">🎥 Yangi video qo‘shish</h3>
+        </div>
+        <div class="card-body p-5">
+          <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+              <div class="mb-4">
+                <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
+                {{ field|add_class:"form-control rounded-3 shadow-sm" }}
+                {% if field.help_text %}
+                  <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                  <div class="text-danger mt-1 small">{{ error }}</div>
+                {% endfor %}
+              </div>
+            {% endfor %}
+
+            <div class="d-flex justify-content-between">
+              <a href="{% url 'videos:video_list' %}" class="btn btn-outline-secondary rounded-pill px-4">⬅️ Bekor qilish</a>
+              <button type="submit" class="btn btn-success rounded-pill px-4">💾 Saqlash</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

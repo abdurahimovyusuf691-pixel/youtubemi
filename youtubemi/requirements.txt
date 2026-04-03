@@ -1,0 +1,5 @@
+Django==5.2.*
+django-widget-tweaks
+Pillow==10.4.*
+python-dotenv
+# Run `pip freeze > requirements.txt` in venv to update.
